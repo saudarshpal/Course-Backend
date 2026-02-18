@@ -1,0 +1,28 @@
+{
+  "name": "course-selling-api",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@prisma/adapter-pg": "^7.4.0",
+    "@prisma/client": "^7.4.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/pg": "^8.16.0",
+    "pg": "^8.18.0",
+    "prisma": "^7.4.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.19",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.3.6"
+  }
+}
