@@ -26,7 +26,10 @@ export const purchaseCourse = async(req:Request,res:Response) =>{
             mssg : "Purchased",
             purchase
         })
-    }catch(err){
+    }catch(err:any){
+        if(err.code ==='P2002'){
+            return res.status(ResponseStatus.forbidden).json({mssg : "Course Already Purchased"})
+        }
         res.status(ResponseStatus.servererror).json({mssg : "internal server error"})
     }
 }

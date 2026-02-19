@@ -32,15 +32,11 @@ export const getAllCourse = async(req:Request , res:Response)=>{
 }
 
 export const createCourse = async(req:Request,res:Response)=>{
-    const role = req.user?.role
     const instructorId = req.user?.userId
     const {title,description,price} = req.body
     const {success} = CreateCourseSchema.safeParse(req.body)
-    if(!success){
+    if(!success || !instructorId){
         return res.status(ResponseStatus.error).json({mssg : "Validation Error"})
-    }
-    if(role != "instructor" || !instructorId){
-        return res.status(ResponseStatus.forbidden).json({mssg : "not an instructor"})
     }
     try{
         const course = await prisma.course.create({
@@ -51,7 +47,10 @@ export const createCourse = async(req:Request,res:Response)=>{
             instructorId
         }
     })
-        return res.status(ResponseStatus.created).json({mssg : "Course Created"})
+        return res.status(ResponseStatus.created).json({
+            mssg : "Course Created",
+            course
+        })
     }catch(err){
         return res.status(ResponseStatus.servererror).json({mssg : "Internal Server Error"})
     }
@@ -82,10 +81,9 @@ export const getCourseLessons = async(req:Request,res:Response)=>{
 export const updateCourse  = async(req:Request,res:Response)=>{
     const data = req.body
     const {courseId} = req.params
-    const role = req.user?.role
     const instructorId = req.user?.userId
-    if(!courseId || typeof courseId != "string" || role != "instructor" || !instructorId){
-        return res.status(ResponseStatus.notfound).json({msg : "unauthorised/Bad gateway"})
+    if(!courseId || typeof courseId != "string" ){
+        return res.status(ResponseStatus.notfound).json({msg : "Validation Error"})
     }
     try{
         const course = await prisma.course.findUnique({
@@ -113,7 +111,6 @@ export const updateCourse  = async(req:Request,res:Response)=>{
 
 export const deleteCourse  = async(req:Request,res:Response)=>{
     const {courseId} = req.params
-    console.log(courseId)
     if(!courseId || typeof courseId != "string" ){
         return res.status(ResponseStatus.notfound).json({msg : "Bad GateWay"})
     }
@@ -129,10 +126,8 @@ export const deleteCourse  = async(req:Request,res:Response)=>{
 
 export const courseStats = async(req:Request , res:Response)=>{
     const {courseId} = req.params
-    const role = req.user?.role
-    const instructorId = req.user?.userId
-    if( role != "instructor" || !instructorId || typeof courseId !="string"){
-        return res.status(ResponseStatus.forbidden).json({mssg:"unauthorized"})
+    if( typeof courseId !="string"){
+        return res.status(ResponseStatus.forbidden).json({mssg:"Validation error"})
     }
     try{
         const course = await prisma.course.findUnique({
