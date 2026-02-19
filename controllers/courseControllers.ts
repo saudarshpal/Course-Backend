@@ -2,30 +2,17 @@ import { type Request,type Response } from "express";
 import { prisma } from "../config/db";
 import { ResponseStatus } from "../config/enum";
 import { CreateCourseSchema } from "../config/zodSchema";
+import { paginationOptions } from "../utils/pagination.utils";
+import { getPaginatedCourses } from "../services/courseServices";
 
 
 export const getAllCourse = async(req:Request , res:Response)=>{
     try{
-        const courses = await prisma.course.findMany({
-            select  : {
-                id : true ,
-                title : true,
-                description : true,
-                price : true,
-                createdAt : true ,
-                instructor : {
-                    select : {
-                        id : true,
-                        name : true
-                    }
-                }
+        const {page,limit,skip} = paginationOptions(req.query.page,req.query.limit)
 
-            }
-        })
-        return res.status(ResponseStatus.success).json({
-            mssg : "Courses Fectched",
-            courses
-        })
+        const result = await getPaginatedCourses(page,limit,skip)
+
+        return res.status(ResponseStatus.success).json(result)
     }catch(err){
         res.status(ResponseStatus.servererror).json({mssg : "Internal Server Error"})
     }
